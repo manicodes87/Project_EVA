@@ -2,13 +2,23 @@ import { app, BrowserWindow } from "electron";
 import path, { dirname } from "node:path";
 import started from "electron-squirrel-startup";
 import { fileURLToPath } from "node:url";
-import { initializeLlama } from "./eva-core/llama";
+import { LLMRunner } from "./eva-core/llm-runner";
+import { IntentRouter } from "./eva-core/intent-router";
 import WebsocketManager from "./utils/websocketManager";
 import { WindowManager } from "./utils/windowManager";
 import { registerIpcMainHandlers } from "./ipc";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+let intentRouter: IntentRouter | null = null;
+let websocketManager: WebsocketManager | null = null;
+
+async function initializeLLM() {
+  const llmRunner = LLMRunner.getInstance("phi3.gguf");
+  await llmRunner.initialize();
+  intentRouter = new IntentRouter(llmRunner);
+}
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -39,9 +49,6 @@ const createWindow = () => {
   WindowManager.setMainWindow(mainWindow);
 
   // Initialize Llama CPP
-  initializeLlama();
-  // Initialize WebSocket Manager
-  const wm = WebsocketManager.getInstance("ws://localhost:8080");
 };
 
 // This method will be called when Electron has finished
@@ -49,6 +56,8 @@ const createWindow = () => {
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
   createWindow();
+  websocketManager = WebsocketManager.getInstance("ws://localhost:6000");
+  initializeLLM();
   registerIpcMainHandlers();
 });
 
