@@ -2,8 +2,10 @@ import { app, BrowserWindow } from "electron";
 import path, { dirname } from "node:path";
 import started from "electron-squirrel-startup";
 import { fileURLToPath } from "node:url";
-import { initializeLlama } from "./llama/llama";
+import { initializeLlama } from "./eva-core/llama";
 import WebsocketManager from "./utils/websocketManager";
+import { WindowManager } from "./utils/windowManager";
+import { registerIpcMainHandlers } from "./ipc";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -34,14 +36,21 @@ const createWindow = () => {
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
+  WindowManager.setMainWindow(mainWindow);
+
+  // Initialize Llama CPP
   initializeLlama();
+  // Initialize WebSocket Manager
   const wm = WebsocketManager.getInstance("ws://localhost:8080");
 };
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", createWindow);
+app.on("ready", () => {
+  createWindow();
+  registerIpcMainHandlers();
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
