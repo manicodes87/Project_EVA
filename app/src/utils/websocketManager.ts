@@ -19,8 +19,6 @@ class WebsocketManager {
     this.socket = new WebSocket(url);
     this.socket.on("open", () => {
       console.log("WebSocket connection established");
-
-      this.setupMessageHandler();
     });
 
     this.socket.on("close", () => {
@@ -33,13 +31,12 @@ class WebsocketManager {
     });
   }
 
-  private setupMessageHandler(): void {
+  public subscribeEvent(eventFunction: CallableFunction): void {
     if (!this.socket) return;
+
     this.socket.on("message", (msg) => {
       const data = JSON.parse(msg.toString());
-      if (data.event === "eva_wake") {
-        console.log("EVA Wake Word Detected!");
-      }
+      eventFunction(data);
     });
   }
 }
