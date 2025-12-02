@@ -18,7 +18,7 @@ function AnimatedRoutes() {
           path="/"
           element={
             <motion.div
-              className="h-full w-full"
+              className="h-full w-full flex justify-center items-center"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -33,7 +33,7 @@ function AnimatedRoutes() {
           path="/chat"
           element={
             <motion.div
-              className="h-full w-full"
+              className="h-full w-full flex justify-center items-center"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -48,7 +48,7 @@ function AnimatedRoutes() {
           path="/settings"
           element={
             <motion.div
-              className="h-full w-full"
+              className="h-full w-full flex justify-center items-center"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}

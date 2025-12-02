@@ -1,16 +1,8 @@
 import React, { useRef, useState } from "react";
 import ButtonBorderRight from "../../ui/buttons/BorderRight";
-import {
-  ChevronDown,
-  ChevronRight,
-  ChevronRightIcon,
-  Home,
-  ListCollapse,
-  MessageCircle,
-  Settings,
-} from "lucide-react";
+import { ChevronRight, Home, MessageCircle, Settings } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 
 const navItems = [
   {
@@ -68,7 +60,7 @@ export default function NavBar() {
       <ul className="mt-10">
         {navItems.map((item) => (
           <motion.li
-            className={`relative p-1 rounded-[10px] cursor-pointer m-3  ${location.pathname === item.path ? "bg-(--secondary-color)" : "bg-(--background-color)"}`}
+            className={`relative p-1 rounded-[10px] cursor-pointer m-3 outline-none  ${location.pathname === item.path ? "bg-(--secondary-color)" : "bg-(--background-color)"}`}
             animate={{
               visibility: collapsed ? "hidden" : "visible",
               opacity: collapsed ? 0 : 1,
