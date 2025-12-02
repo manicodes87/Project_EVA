@@ -69,7 +69,10 @@ export default function NavBar() {
             }}
           >
             <Link to={item.path}>
-              <ButtonBorderRight child={<NavItem icon={item.icon} text={item.text} />} />
+              <ButtonBorderRight
+                child={<NavItem icon={item.icon} text={item.text} />}
+                key={item.text}
+              />
             </Link>
           </motion.li>
         ))}
