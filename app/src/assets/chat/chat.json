@@ -1,1 +1,14 @@
-{"chats":[{"sender":"Eva","Message":"Some message"},{"sender":"User","Message":"Some message"},{"sender":"User","message":"DAMN"},{"sender":"User","message":"DAMN"},{"sender":"User","message":"DAMN"},{"sender":"User","message":"DAMN"},{"sender":"User","message":"DAMN"},{"sender":"User","message":"DAMN"}]}
+{
+  "chats": [
+    { "sender": "Eva", "message": "Some message", "id": 1 },
+    { "sender": "User", "message": "Some message", "id": 2 },
+    { "sender": "User", "message": "DAMN", "id": 3 },
+    { "sender": "User", "message": "DAMN", "id": 4 },
+    { "sender": "User", "message": "DAMN", "id": 5 },
+    { "sender": "User", "message": "DAMN", "id": 6 },
+    { "sender": "User", "message": "DAMN", "id": 7 },
+    { "sender": "User", "message": "DAMN", "id": 8 },
+    { "sender": "User", "message": "DAMN", "id": 9 },
+    { "sender": "User", "message": "DAMN", "id": 10 }
+  ]
+}
