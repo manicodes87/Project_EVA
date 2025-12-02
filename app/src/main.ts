@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import path, { dirname } from "node:path";
 import started from "electron-squirrel-startup";
 import { fileURLToPath } from "node:url";
@@ -7,12 +7,14 @@ import { IntentRouter } from "./eva-core/intent-router";
 import WebsocketManager from "./utils/websocketManager";
 import { WindowManager } from "./utils/windowManager";
 import { registerIpcMainHandlers } from "./ipc";
+import { ChatManager } from "./utils/chatManager";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 let intentRouter: IntentRouter | null = null;
 let websocketManager: WebsocketManager | null = null;
+let chatManager: ChatManager | null = null;
 
 async function initializeLLM() {
   const llmRunner = LLMRunner.getInstance("phi3.gguf");
@@ -58,6 +60,7 @@ const createWindow = () => {
 app.on("ready", () => {
   createWindow();
   websocketManager = WebsocketManager.getInstance("ws://localhost:6000");
+  chatManager = ChatManager.getInstance();
   initializeLLM();
   registerIpcMainHandlers();
 });

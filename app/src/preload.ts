@@ -4,11 +4,9 @@
 import { contextBridge, ipcRenderer } from "electron";
 
 contextBridge.exposeInMainWorld("eva", {
-  onWake: (callback: () => void) => {
-    ipcRenderer.on("eva:wake", () => callback());
-  },
-
-  invoke: (channel: string, data?: any) => {
-    return ipcRenderer.invoke(channel, data);
+  onWake: (callback: () => void) => ipcRenderer.on("eva:wake", () => callback()),
+  readChats: () => ipcRenderer.invoke("read-chats"),
+  saveChats: (sender: string, message: string) => {
+    ipcRenderer.invoke("save-chats", sender, message);
   },
 });
