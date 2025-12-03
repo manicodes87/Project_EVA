@@ -16,29 +16,36 @@ export class IntentRouter {
     return IntentRouter.instance;
   }
 
-  async handlePrompt(prompt: string): Promise<{ message: number }> {
+  async handlePrompt(prompt: string): Promise<{ message: string | number }> {
     const intent = await this.classifyIntent(prompt);
     if (!intent) return { message: 404 };
 
-    switch (intent) {
+    switch (intent.intent) {
       case "open_app":
-        console.log("Intent to open an app detected.");
-        break;
+        return { message: intent.response_to_intent };
       case "search_web":
-        console.log("Intent to search the web detected.");
-        break;
+        return { message: intent.response_to_intent };
       default:
-        console.log("Default intent detected.");
+        return { message: intent.response_to_intent };
     }
-
-    return { message: 200 };
   }
 
-  private async classifyIntent(prompt: string): Promise<string> {
-    const intentPrompt = `Classify the intent of the following prompt: "${prompt}" \n into one of the following categories: open_app, search_web, or default_intent. Respond with only the intent category. If the prompt given is not asking you to do any of these intents respond normally.`;
+  private async classifyIntent(
+    prompt: string
+  ): Promise<{ intent: string; response_to_intent: string }> {
+    const intentPrompt = `Your name is Eva. Classify the intent of the following prompt: "${prompt}" \n 
+    into one of the following categories: 
+    open_app,
+    search_web.
+    Respond in this json format example : { "intent": "open_app", "response_to_intent": "Opening App!" } 
+    If the prompt given is not asking you to do any of these intents respond
+    { "intent": "default_intent", "response_to_intent": "Respond in a way an assintant or a friend would do depending on the situation" }.
+    Try to remember your conversations. dont remove the from memmory as much as possible.`;
 
-    const response = await this.llmRunner.generatePrompt(intentPrompt);
-    console.log(response);
+    const response = JSON.parse(await this.llmRunner.generatePrompt(intentPrompt)) as {
+      intent: string;
+      response_to_intent: string;
+    };
     return response;
   }
 }

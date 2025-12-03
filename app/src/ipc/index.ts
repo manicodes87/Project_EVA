@@ -1,8 +1,9 @@
 import { registerReadChats, registerSaveChats } from "./chat-bridge";
-import { registerEvaBridge } from "./eva-bridge";
+import { registerEvaAnswer, registerEvaWake } from "./eva-bridge";
 
 export function registerIpcMainHandlers() {
-  registerEvaBridge();
+  registerEvaWake();
   registerReadChats();
   registerSaveChats();
+  registerEvaAnswer();
 }
