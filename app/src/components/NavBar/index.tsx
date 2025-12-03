@@ -60,6 +60,7 @@ export default function NavBar() {
       <ul className="mt-10">
         {navItems.map((item) => (
           <motion.li
+            key={item.text}
             className={`relative p-1 rounded-[10px] cursor-pointer m-3 outline-none  ${location.pathname === item.path ? "bg-(--secondary-color)" : "bg-(--background-color)"}`}
             animate={{
               visibility: collapsed ? "hidden" : "visible",
@@ -69,10 +70,7 @@ export default function NavBar() {
             }}
           >
             <Link to={item.path}>
-              <ButtonBorderRight
-                child={<NavItem icon={item.icon} text={item.text} />}
-                key={item.text}
-              />
+              <ButtonBorderRight child={<NavItem icon={item.icon} text={item.text} />} />
             </Link>
           </motion.li>
         ))}
