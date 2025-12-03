@@ -39,16 +39,18 @@ export class ChatManager {
     return data;
   }
 
-  public saveMessage(sender: string, message: string) {
+  public saveMessage(sender: string, message: string): { message: number } {
+    if (!message || message.trim() == "") return { message: 400 };
     const rawdata = fs.readFileSync(this.fileURL).toString();
     const data = JSON.parse(rawdata);
 
     data.chats.push({
       sender,
       message,
-      id: data.chats[data.chats.length - 1].id + 1,
+      id: crypto.randomUUID(),
     });
 
     fs.writeFileSync(this.fileURL, JSON.stringify(data));
+    return { message: 200 };
   }
 }
