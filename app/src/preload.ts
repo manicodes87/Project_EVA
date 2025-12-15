@@ -10,4 +10,7 @@ contextBridge.exposeInMainWorld("eva", {
     ipcRenderer.invoke("save-chats", sender, message),
   onMessageReady: (callback: () => void) =>
     ipcRenderer.on("eva_answer_ready", () => callback()),
+  loadSettings: () => ipcRenderer.invoke("load-settings"),
+  changeSettings: (newSettings: string) =>
+    ipcRenderer.invoke("change-settings", newSettings),
 });

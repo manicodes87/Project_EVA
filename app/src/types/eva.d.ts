@@ -10,6 +10,8 @@ declare global {
         message: string
       ) => Promise<{ message: number | string }>;
       onMessageReady: (cb: () => void) => void;
+      loadSettings: () => Promise;
+      changeSettings: (newSettings: string) => void;
     };
   }
 }

@@ -48,6 +48,7 @@
     "lucide-react": "^0.555.0",
     "motion": "^12.23.25",
     "node-llama-cpp": "^3.14.2",
+    "open": "^11.0.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.9.6",
