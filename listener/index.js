@@ -10,11 +10,11 @@ import "dotenv/config";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const WHISPER_EXEC = path.join(__dirname, "..", "model", "whisper", "whisper-cli.exe");
+const WHISPER_EXEC = path.join(__dirname, "..", "model", "whisper", "whisper-cli.exe"); // Whisper CLI for transcripting
 const MODEL = path.join(__dirname, "..", "model", "ggml-base.bin"); // lightweight English model
 const SAMPLE_RATE = 16000;
 const SILENCE_THRESHOLD = 200; // adjust to mic sensitivity
-const SILENCE_TIMEOUT = 3000; // milliseconds of silence
+const SILENCE_TIMEOUT = 2000; // milliseconds of silence
 
 class EvaListener {
   constructor() {
@@ -34,11 +34,9 @@ class EvaListener {
 
   startWebSocketServer() {
     this.wss = new WebSocketServer({ port: 6000 });
-    this.wss.on("listening", () =>
-      console.log("WebSocket running on ws://localhost:6000")
-    );
   }
 
+  // For emitting events to the main electron app
   emitEvent(event, payload = {}) {
     this.wss?.clients.forEach((client) => {
       if (client.readyState === client.OPEN)
@@ -66,7 +64,6 @@ class EvaListener {
 
       // Wake word detected
       if (result >= 0 && !this.isRecording) {
-        console.log("EVA WAKE WORD DETECTED");
         this.emitEvent("eva_wake");
         this.isRecording = true;
         this.audioBuffer = [];
@@ -82,7 +79,6 @@ class EvaListener {
           // reset silence timer
           if (silenceTimer) clearTimeout(silenceTimer);
           silenceTimer = setTimeout(async () => {
-            console.log("Silence detected, stopping recording...");
             this.isRecording = false;
             await this.transcribeAudio(this.audioBuffer);
           }, SILENCE_TIMEOUT);
@@ -129,14 +125,13 @@ class EvaListener {
   }
 
   async transcribeAudio(pcmArray) {
-    console.log("Converting speech to WAV and transcribing with Whisper...");
     const wavBuffer = this.pcmToWav(pcmArray);
     const tmpFile = path.join(process.cwd(), "temp.wav");
     fs.writeFileSync(tmpFile, wavBuffer);
 
     const whisperProc = spawn(
       WHISPER_EXEC,
-      [tmpFile, "--model", MODEL, "--language", "en"],
+      [tmpFile, "--model", MODEL, "--language", "en", "--no-timestamps"],
       { shell: true }
     );
 
@@ -146,22 +141,17 @@ class EvaListener {
       transcript += data.toString();
     });
 
-    whisperProc.stderr.on("data", (data) => {
-      // just logs, not real errors
-      console.log("Whisper log:", data.toString());
-    });
-
     whisperProc.on("error", (err) => console.error("Whisper spawn error:", err));
 
+    // Emitting the speech results after the proccess exit
     whisperProc.on("exit", (code) => {
-      console.log("📝 Transcription:", transcript.trim());
+      console.log("Transcription:", transcript.trim());
       this.emitEvent("speech_text", { text: transcript.trim() });
       fs.unlinkSync(tmpFile);
     });
   }
 
   async stop() {
-    console.log("Stopping EVA Listener...");
     if (this.recorder) await this.recorder.stop();
     this.porcupine?.release();
     this.wss?.close();
