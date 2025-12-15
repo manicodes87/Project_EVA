@@ -1,19 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { Settings, Entry } from "../../types/types";
 
-interface AppEntry {
-  name: string;
-  dir: string;
-}
-
-export default function AppManager({
-  appsList,
-}: {
-  appsList: { appNames: string[]; apps: AppEntry[] };
-}) {
+export default function AppManager({ settings }: { settings: Settings }) {
   const [name, setName] = useState("");
   const [dir, setdir] = useState("");
-  const [apps, setApps] = useState<AppEntry[]>(appsList?.apps);
-  const [appNames, setAppNames] = useState<string[]>();
+  const [apps, setApps] = useState<Entry[]>(settings?.apps);
+  const [appNames, setAppNames] = useState<string[]>(settings?.appNames);
 
   const handleAddApp = () => {
     const path = dir.trim();
@@ -24,11 +16,12 @@ export default function AppManager({
     setApps([...apps, { name: name.trim().toLowerCase(), dir: fixedPath }]);
     setAppNames([...appNames, name.trim().toLowerCase()]);
 
-    const settings = {
+    const newSettings: Settings = {
       apps: [...apps, { name: name.trim().toLowerCase(), dir: fixedPath }],
       appNames: [...appNames, name.trim().toLowerCase()],
+      models: settings.models,
     };
-    window.eva.changeSettings(JSON.stringify(settings));
+    window.eva.changeSettings(JSON.stringify(newSettings));
 
     setName("");
     setdir("");
@@ -36,13 +29,13 @@ export default function AppManager({
 
   // Initial app values passed through props
   useEffect(() => {
-    if (!appsList) return;
-    setApps([...appsList.apps]);
-    setAppNames([...appsList.appNames]);
-  }, [appsList]);
+    if (!settings) return;
+    setApps([...settings.apps]);
+    setAppNames([...settings.appNames]);
+  }, [settings]);
 
   return (
-    <div className="p-6 bg-(--background-darker-color) rounded-lg">
+    <div className="p-6 bg-(--background-darker-color) rounded-lg m-2">
       <h2 className="text-xl font-bold mb-4">Add a New App</h2>
       <div className="flex flex-col gap-3 mb-4">
         <input

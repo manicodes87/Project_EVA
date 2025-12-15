@@ -10,11 +10,25 @@ let filePath = "";
 
 if (app.isPackaged) {
   // Packaged app: apps are inside resources folder
-  filePath = path.join(process.resourcesPath, "assets", "src", "intents", "apps.json");
+  filePath = path.join(
+    process.resourcesPath,
+    "assets",
+    "src",
+    "settings",
+    "settings.json"
+  );
 } else {
   // Dev mode: resolve from project root, not __dirname
   // Adjust this depending on your project structure
-  filePath = path.join(__dirname, "..", "..", "src", "assets", "intents", "apps.json");
+  filePath = path.join(
+    __dirname,
+    "..",
+    "..",
+    "src",
+    "assets",
+    "settings",
+    "settings.json"
+  );
 }
 
 export function registerLoadSettings() {

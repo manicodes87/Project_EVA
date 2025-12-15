@@ -28,11 +28,11 @@ export class IntentRouter {
   private getAppsFile() {
     if (app.isPackaged) {
       // Packaged app: apps are inside resources folder
-      return path.join(process.resourcesPath, "assets", "src", "intents", "apps.json");
+      return path.join(process.resourcesPath, "assets", "src", "settings", "apps.json");
     } else {
       // Dev mode: resolve from project root, not __dirname
       // Adjust this depending on your project structure
-      return path.join(__dirname, "..", "..", "src", "assets", "intents", "apps.json");
+      return path.join(__dirname, "..", "..", "src", "assets", "settings", "apps.json");
     }
   }
 
