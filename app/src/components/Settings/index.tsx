@@ -1,10 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import AppManager from "../AppEntry";
+
+const loadSettings = async () => {
+  return await window.eva.loadSettings();
+};
 
 export default function Settings() {
+  const [apps, setApps] = useState();
+
+  useEffect(() => {
+    loadSettings().then((item) => {
+      setApps(item);
+    });
+  }, []);
+
   return (
-    <div className="p-5">
-      <h1 className="text-2xl font-bold mb-4">Settings Page</h1>
-      <p>This is where the Settings functionality will be implemented.</p>
+    <div className="p-5 w-[90%]">
+      <AppManager appsList={apps} />
     </div>
   );
 }
