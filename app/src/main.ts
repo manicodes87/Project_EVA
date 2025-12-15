@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow } from "electron";
 import path, { dirname } from "node:path";
 import started from "electron-squirrel-startup";
 import { fileURLToPath } from "node:url";
@@ -8,16 +8,17 @@ import WebsocketManager from "./utils/websocketManager";
 import { WindowManager } from "./utils/windowManager";
 import { registerIpcMainHandlers } from "./ipc";
 import { ChatManager } from "./utils/chatManager";
+import { subscribeText } from "./eva-core/stt-engine";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export let intentRouter: IntentRouter | null = null;
-let websocketManager: WebsocketManager | null = null;
+export let websocketManager: WebsocketManager | null = null;
 let chatManager: ChatManager | null = null;
 
 async function initializeLLM() {
-  const llmRunner = LLMRunner.getInstance("phi3.gguf");
+  const llmRunner = LLMRunner.getInstance("eva.gguf");
   await llmRunner.initialize();
   intentRouter = new IntentRouter(llmRunner);
 }
@@ -63,6 +64,7 @@ app.on("ready", () => {
   chatManager = ChatManager.getInstance();
   initializeLLM();
   registerIpcMainHandlers();
+  subscribeText();
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
