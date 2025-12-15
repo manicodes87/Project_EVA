@@ -1,0 +1,8 @@
+{
+  "apps": [
+    { "name": "CMD", "dir": "cmd.exe" },
+    { "name": "vscode", "dir": "code" },
+    { "name": "steam", "dir": "E:/Steam/steam.exe" }
+  ],
+  "appNames": ["CMD", "vscode", "steam"]
+}
