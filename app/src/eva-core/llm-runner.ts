@@ -2,6 +2,7 @@ import { fileURLToPath } from "node:url";
 import path, { dirname } from "node:path";
 import { app } from "electron";
 import { LlamaChatSession } from "node-llama-cpp";
+import os from "os";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -30,7 +31,12 @@ export class LLMRunner {
     const model = await llama.loadModel({
       modelPath: this.modelPath,
     });
-    const context = await model.createContext();
+
+    // Limiters
+    const context = await model.createContext({
+      contextSize: 2048,
+      threads: Math.max(1, os.cpus().length - 1),
+    });
     this.session = new LlamaChatSession({
       contextSequence: context.getSequence(),
     });
