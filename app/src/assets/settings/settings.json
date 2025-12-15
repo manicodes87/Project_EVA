@@ -1,0 +1,13 @@
+{
+  "appNames": ["CMD", "vscode", "steam", "some app"],
+  "apps": [
+    { "name": "CMD", "dir": "cmd.exe" },
+    { "name": "vscode", "dir": "code" },
+    { "name": "steam", "dir": "E:/Steam/steam.exe" }
+  ],
+  "models": [
+    { "name": "whisperModel", "dir": "" },
+    { "name": "assistantModel", "dir": "" },
+    { "name": "porcupineModel", "dir": "" }
+  ]
+}
