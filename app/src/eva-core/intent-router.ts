@@ -1,11 +1,39 @@
 import { LLMRunner } from "./llm-runner";
+import fs from "fs";
+import { app } from "electron";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
+import open from "open";
+import generateIntentContext from "../utils/intentPromptGen";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Singleton IntentRouter to manage intent classification
 export class IntentRouter {
   private static instance: IntentRouter | null;
   private llmRunner: LLMRunner | null;
+  private appNames: string[] | null;
+  private apps: { name: string; dir: string }[] | null;
+
   constructor(llmRunner: LLMRunner) {
     this.llmRunner = llmRunner;
+
+    const rawdata = fs.readFileSync(this.getAppsFile()).toString();
+    const data = JSON.parse(rawdata);
+    this.appNames = data.appNames;
+    this.apps = data.apps;
+  }
+
+  private getAppsFile() {
+    if (app.isPackaged) {
+      // Packaged app: apps are inside resources folder
+      return path.join(process.resourcesPath, "assets", "src", "intents", "apps.json");
+    } else {
+      // Dev mode: resolve from project root, not __dirname
+      // Adjust this depending on your project structure
+      return path.join(__dirname, "..", "..", "src", "assets", "intents", "apps.json");
+    }
   }
 
   public static getInstance(llmRunner: LLMRunner): IntentRouter {
@@ -16,12 +44,19 @@ export class IntentRouter {
     return IntentRouter.instance;
   }
 
-  async handlePrompt(prompt: string): Promise<{ message: string | number }> {
+  public async handlePrompt(prompt: string): Promise<{ message: string | number }> {
     const intent = await this.classifyIntent(prompt);
     if (!intent) return { message: 404 };
 
-    switch (intent.intent) {
+    switch (intent.intent.action) {
       case "open_app":
+        this.apps.forEach((item) => {
+          if (
+            item.name.toLowerCase().trim() === intent.intent.target.toLowerCase().trim()
+          ) {
+            open(item.dir);
+          }
+        });
         return { message: intent.response_to_intent };
       case "search_web":
         return { message: intent.response_to_intent };
@@ -32,20 +67,16 @@ export class IntentRouter {
 
   private async classifyIntent(
     prompt: string
-  ): Promise<{ intent: string; response_to_intent: string }> {
-    const intentPrompt = `Your name is Eva. Classify the intent of the following prompt: "${prompt}" \n 
-    into one of the following categories: 
-    open_app,
-    search_web.
-    Respond in this json format example : { "intent": "open_app", "response_to_intent": "Opening App!" } 
-    If the prompt given is not asking you to do any of these intents respond
-    { "intent": "default_intent", "response_to_intent": "Respond in a way an assintant or a friend would do depending on the situation" }.
-    Try to remember your conversations. dont remove the from memmory as much as possible.`;
+  ): Promise<{ intent: { action: string; target: string }; response_to_intent: string }> {
+    const intentPrompt = generateIntentContext(this.appNames, prompt);
 
-    const response = JSON.parse(await this.llmRunner.generatePrompt(intentPrompt)) as {
-      intent: string;
+    const response = await this.llmRunner.generatePrompt(intentPrompt);
+    console.log(response);
+    const response_json = JSON.parse(response) as {
+      intent: { action: string; target: string };
       response_to_intent: string;
     };
-    return response;
+
+    return response_json;
   }
 }
