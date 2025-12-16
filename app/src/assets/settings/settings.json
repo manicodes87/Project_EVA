@@ -7,7 +7,7 @@
   ],
   "models": [
     { "name": "whisperModel", "dir": "" },
-    { "name": "assistantModel", "dir": "" },
+    { "name": "assistantModel", "dir": "E:/projects/Project_EVA/model/eva.gguf" },
     { "name": "porcupineModel", "dir": "" }
   ]
 }

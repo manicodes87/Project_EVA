@@ -18,7 +18,7 @@ export let websocketManager: WebsocketManager | null = null;
 let chatManager: ChatManager | null = null;
 
 async function initializeLLM() {
-  const llmRunner = LLMRunner.getInstance("eva.gguf");
+  const llmRunner = LLMRunner.getInstance();
   await llmRunner.initialize();
   intentRouter = new IntentRouter(llmRunner);
 }

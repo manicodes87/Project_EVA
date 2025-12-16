@@ -1,13 +1,8 @@
 import { LLMRunner } from "./llm-runner";
 import fs from "fs";
-import { app } from "electron";
-import path, { dirname } from "path";
-import { fileURLToPath } from "url";
 import open from "open";
 import generateIntentContext from "../utils/intentPromptGen";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import getSettingsFile from "../utils/fetchSettingsFile";
 
 // Singleton IntentRouter to manage intent classification
 export class IntentRouter {
@@ -19,21 +14,10 @@ export class IntentRouter {
   constructor(llmRunner: LLMRunner) {
     this.llmRunner = llmRunner;
 
-    const rawdata = fs.readFileSync(this.getAppsFile()).toString();
+    const rawdata = fs.readFileSync(getSettingsFile()).toString();
     const data = JSON.parse(rawdata);
     this.appNames = data.appNames;
     this.apps = data.apps;
-  }
-
-  private getAppsFile() {
-    if (app.isPackaged) {
-      // Packaged app: apps are inside resources folder
-      return path.join(process.resourcesPath, "assets", "src", "settings", "apps.json");
-    } else {
-      // Dev mode: resolve from project root, not __dirname
-      // Adjust this depending on your project structure
-      return path.join(__dirname, "..", "..", "src", "assets", "settings", "apps.json");
-    }
   }
 
   public static getInstance(llmRunner: LLMRunner): IntentRouter {

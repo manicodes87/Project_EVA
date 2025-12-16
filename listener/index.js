@@ -45,7 +45,7 @@ class EvaListener {
   }
 
   async startPorcupine() {
-    const keywordPaths = ["./porcupine_keywords/eva-windows.ppn"];
+    const keywordPaths = ["../model/porcupine_keywords/eva-windows.ppn"];
     const sensitivities = [0.6];
     this.porcupine = new Porcupine(process.env.API_KEY, keywordPaths, sensitivities);
     console.log("Porcupine ready");
