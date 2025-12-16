@@ -22,7 +22,7 @@ ${appNames}
 Respond with EXACTLY ONE of the following JSON objects.
 Do NOT add comments, explanations, markdown, or extra text.
 
---- OPTION A: open_app ---
+--- OPTION A: open_app (TARGET HAS TO BE INSIDE INTENT) ---
 {
   "intent": { 
     "action": "open_app", 
@@ -40,6 +40,7 @@ Do NOT add comments, explanations, markdown, or extra text.
 ### SELF-CHECK (SILENT)
 Before responding, verify that:
 - Output is valid JSON
+- intent should be an object with target and action inside it.
 - Output matches ONE option above exactly
 - No extra keys or text exist
 If any rule is violated, fix it silently.
