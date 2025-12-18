@@ -1,0 +1,77 @@
+import './index.css'
+import NavBar from '@renderer/components/NavBar'
+import Home from '@renderer/components/Home'
+import Settings from '@renderer/components/Settings'
+import Chat from '@renderer/components/Chat'
+import { Routes, Route, useLocation, HashRouter } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
+import { JSX } from 'react'
+
+function AnimatedRoutes(): JSX.Element {
+  const location = useLocation()
+
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route
+          path="/"
+          element={
+            <motion.div
+              className="h-full w-full flex justify-center items-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              layout
+            >
+              <Home />
+            </motion.div>
+          }
+        />
+        <Route
+          path="/chat"
+          element={
+            <motion.div
+              className="h-full w-full flex justify-center items-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              layout
+            >
+              <Chat />
+            </motion.div>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <motion.div
+              className="h-full w-full flex justify-center items-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              layout
+            >
+              <Settings />
+            </motion.div>
+          }
+        />
+      </Routes>
+    </AnimatePresence>
+  )
+}
+
+export default function App(): JSX.Element {
+  return (
+    <HashRouter>
+      <div id="app" className="flex h-screen w-screen overflow-hidden shadow-lg">
+        <NavBar />
+        <div className="flex-1 bg-(--background-lighter-color) ml-px relative">
+          <AnimatedRoutes />
+        </div>
+      </div>
+    </HashRouter>
+  )
+}

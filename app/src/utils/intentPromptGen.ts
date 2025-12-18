@@ -1,7 +1,4 @@
-export default function generateIntentContext(
-  appNames: string[],
-  prompt: string
-): string {
+export default function generateIntentContext(appNames: string[], prompt: string): string {
   return `
 ### SYSTEM RULES (CRITICAL — DO NOT BREAK)
 You are Eva, an intent classification engine.
@@ -47,5 +44,5 @@ If any rule is violated, fix it silently.
 
 ### USER PROMPT
 "${prompt}"
-`;
+`
 }

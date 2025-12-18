@@ -1,10 +1,10 @@
-import { BrowserWindow } from "electron";
+import { BrowserWindow } from 'electron'
 
-let mainWindow: BrowserWindow | null = null;
+let mainWindow: BrowserWindow | null = null
 
 export const WindowManager = {
   setMainWindow: (win: BrowserWindow) => {
-    mainWindow = win;
+    mainWindow = win
   },
-  getMainWindow: () => mainWindow,
-};
+  getMainWindow: () => mainWindow
+}

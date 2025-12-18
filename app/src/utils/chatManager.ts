@@ -1,56 +1,58 @@
-import fs from "fs";
-import path, { dirname } from "path";
-import { app } from "electron";
-import { fileURLToPath } from "url";
+import fs from 'fs'
+import path, { dirname } from 'path'
+import { app } from 'electron'
+import { fileURLToPath } from 'url'
+import { ChatInterface } from '@/types/types'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 export class ChatManager {
-  private static instance: ChatManager | null;
-  private fileURL: string | null;
+  private static instance: ChatManager
+  private fileURL: string
 
   constructor() {
-    this.fileURL = this.getChatPath();
+    this.fileURL = this.getChatPath()
   }
 
-  public static getInstance() {
+  public static getInstance(): ChatManager {
     if (!ChatManager.instance) {
-      ChatManager.instance = new ChatManager();
+      ChatManager.instance = new ChatManager()
     }
-    return ChatManager.instance;
+    return ChatManager.instance
   }
 
-  private getChatPath() {
+  private getChatPath(): string {
     if (app.isPackaged) {
       // Packaged app: models are inside resources folder
-      return path.join(process.resourcesPath, "assets", "src", "chat", "chat.json");
+      return path.join(process.resourcesPath, 'chat', 'chat.json')
     } else {
       // Dev mode: resolve from project root, not __dirname
       // Adjust this depending on your project structure
-      return path.join(__dirname, "..", "..", "src", "assets", "chat", "chat.json");
+      console.log(process.resourcesPath)
+      return path.join(__dirname, '..', '..', 'src', 'chat', 'chat.json')
     }
   }
 
-  public readChats() {
-    const rawdata = fs.readFileSync(this.fileURL).toString();
-    const data = JSON.parse(rawdata);
+  public readChats(): ChatInterface[] {
+    const rawdata = fs.readFileSync(this.fileURL).toString()
+    const data = JSON.parse(rawdata) as ChatInterface[]
 
-    return data;
+    return data
   }
 
   public saveMessage(sender: string, message: string): { message: number } {
-    if (!message || message.trim() == "") return { message: 400 };
-    const rawdata = fs.readFileSync(this.fileURL).toString();
-    const data = JSON.parse(rawdata);
+    if (!message || message.trim() == '') return { message: 400 }
+    const rawdata = fs.readFileSync(this.fileURL).toString()
+    const data = JSON.parse(rawdata)
 
     data.chats.push({
       sender,
       message,
-      id: crypto.randomUUID(),
-    });
+      id: crypto.randomUUID()
+    })
 
-    fs.writeFileSync(this.fileURL, JSON.stringify(data));
-    return { message: 200 };
+    fs.writeFileSync(this.fileURL, JSON.stringify(data))
+    return { message: 200 }
   }
 }
