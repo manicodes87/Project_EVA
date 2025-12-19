@@ -5,6 +5,7 @@ export default function ModelDirectories({ settings }: { settings: SettingsJson 
   const [whisperModelDir, setWhisperModelDir] = useState<string>('')
   const [assistantModelDir, setAssistantModelDir] = useState<string>('')
   const [porcupineModelDir, setPorcupineModelDir] = useState<string>('')
+  const [kokoroModelDir, setKokoroModelDir] = useState<string>('')
   const [savedModels, setSavedModels] = useState<Entry[]>()
 
   // Initial model values passed through props
@@ -13,39 +14,35 @@ export default function ModelDirectories({ settings }: { settings: SettingsJson 
       const whisperModel = settings.models.find((item) => item.name === 'whisperModel') as Entry
       const assistantModel = settings.models.find((item) => item.name === 'assistantModel') as Entry
       const porcupineModel = settings.models.find((item) => item.name === 'porcupineModel') as Entry
+      const kokoroModel = settings.models.find((item) => item.name === 'kokoroModel') as Entry
 
-      setSavedModels([whisperModel, assistantModel, porcupineModel])
+      setSavedModels([whisperModel, assistantModel, porcupineModel, kokoroModel])
     }
   }, [])
 
   const handleSaveModelDirs = (): void => {
-    if (!whisperModelDir && !assistantModelDir && !porcupineModelDir) return
+    setSavedModels((prevModels) => {
+      const getDir = (name: Entry['name'], input: string) =>
+        input.trim() !== '' ? input.trim() : (prevModels?.find((m) => m.name === name)?.dir ?? '')
 
-    const newModels: Entry[] = [
-      {
-        name: 'whisperModel',
-        dir: whisperModelDir.trim()
-      },
-      {
-        name: 'assistantModel',
-        dir: assistantModelDir.trim()
-      },
-      {
-        name: 'porcupineModel',
-        dir: porcupineModelDir.trim()
+      const newModels: Entry[] = [
+        { name: 'whisperModel', dir: getDir('whisperModel', whisperModelDir) },
+        { name: 'assistantModel', dir: getDir('assistantModel', assistantModelDir) },
+        { name: 'porcupineModel', dir: getDir('porcupineModel', porcupineModelDir) },
+        { name: 'kokoroModel', dir: getDir('kokoroModel', kokoroModelDir) }
+      ]
+
+      const newSettings: SettingsJson = {
+        ...settings,
+        models: newModels
       }
-    ]
 
-    const newSettings: SettingsJson = {
-      appNames: settings.appNames,
-      apps: settings.apps,
-      models: newModels
-    }
+      window.eva.changeSettings(JSON.stringify(newSettings))
 
-    setSavedModels(newModels)
-    window.eva.changeSettings(JSON.stringify(newSettings))
+      return newModels
+    })
 
-    // Clear inputs
+    // clear inputs
     setWhisperModelDir('')
     setAssistantModelDir('')
     setPorcupineModelDir('')
@@ -102,6 +99,20 @@ export default function ModelDirectories({ settings }: { settings: SettingsJson 
           />
         </div>
 
+        {/* Kokoro model */}
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-semibold text-(--text-secondary-color)">
+            Kokoro Model
+          </label>
+          <input
+            type="text"
+            placeholder="Path to Kokoro model"
+            value={kokoroModelDir}
+            onChange={(e) => setKokoroModelDir(e.target.value.replace(/\\/g, '/'))}
+            className="p-4 border-2 rounded-2xl border-(--background-darker-color) text-sm bg-(--background-lighter-color) outline-none transition duration-100 focus:border-(--accent-color)"
+          />
+        </div>
+
         <button
           onClick={handleSaveModelDirs}
           className="p-4 border-2 rounded-2xl bg-(--primary-color) border-(--background-darker-color) text-sm outline-none transition duration-100 hover:bg-(--secondary-color) cursor-pointer mt-3"
@@ -131,7 +142,9 @@ export default function ModelDirectories({ settings }: { settings: SettingsJson 
                           ? 'Assistant Model:'
                           : model.name === 'porcupineModel'
                             ? 'Porcupine Model:'
-                            : ''}
+                            : model.name === 'kokoroModel'
+                              ? 'Kokoro Model:'
+                              : ''}
                     </span>
                     <span className="text-(--text-color)">{model.dir}</span>
                   </div>

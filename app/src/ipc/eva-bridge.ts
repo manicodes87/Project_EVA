@@ -1,27 +1,21 @@
 import { ipcMain } from 'electron'
-import WebsocketManager from '@/utils/websocketManager'
 import { WindowManager } from '@/utils/windowManager'
 import { intentRouter } from '@/main'
 import { ChatManager } from '@/utils/chatManager'
 import { SenderEnum } from '@/types/types'
-
-export function registerEvaWake(): void {
-  // Recieve Wake from listener daemon
-  WebsocketManager.getInstance().subscribeEvent((data: { event: string }) => {
-    const win = WindowManager.getMainWindow()
-    if (!win) return
-    if (data.event !== 'eva_wake') return
-
-    console.log('Wake event from listener')
-
-    // Forward to renderer UI
-    win.webContents.send('eva:wake')
-  })
-}
+import { TTSEngine } from '@/eva-core/tts-engine'
 
 export function registerEvaAnswer(): void {
   ipcMain.on('eva_generate_answer', async (_, message: string) => {
     const res = (await intentRouter?.handlePrompt(message))?.message
+
+    // Activate TTS synthesis
+    TTSEngine.synthesize(res as string).then((audioBuffer) => {
+      // Send TTS ready event to renderer with audio buffer
+      WindowManager?.getMainWindow()?.webContents.send('eva_tts_ready', audioBuffer)
+    })
+
+    // Save chat to chat history
     ChatManager.getInstance().saveMessage(SenderEnum.EVA, res as string)
 
     // Send event to renderer after answer generation

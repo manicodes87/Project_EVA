@@ -7,6 +7,18 @@ import { Routes, Route, useLocation, HashRouter } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { JSX } from 'react'
 
+window.eva.onTTS(async (_, audioBuffer: ArrayBuffer) => {
+  const audioContext = new AudioContext()
+
+  // audioBuffer is ArrayBuffer from worker
+  const decoded = await audioContext.decodeAudioData(audioBuffer)
+
+  const source = audioContext.createBufferSource()
+  source.buffer = decoded
+  source.connect(audioContext.destination)
+  source.start()
+})
+
 function AnimatedRoutes(): JSX.Element {
   const location = useLocation()
 

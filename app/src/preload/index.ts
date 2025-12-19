@@ -3,7 +3,11 @@ import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
 const eva = {
-  onWake: (callback: () => void) => ipcRenderer.on('eva:wake', () => callback()),
+  onTTS: (callback: (event: Electron.IpcRendererEvent, audioBuffer: ArrayBuffer) => void) => {
+    ipcRenderer.on('eva_tts_ready', (event, audioBuffer: ArrayBuffer) =>
+      callback(event, audioBuffer)
+    )
+  },
   readChats: () => ipcRenderer.invoke('read-chats'),
   saveChats: (sender: string, message: string) => ipcRenderer.invoke('save-chats', sender, message),
   onMessageReady: (callback: () => void) => ipcRenderer.on('eva_answer_ready', () => callback()),
