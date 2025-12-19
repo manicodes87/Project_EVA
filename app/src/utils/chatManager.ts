@@ -29,7 +29,6 @@ export class ChatManager {
     } else {
       // Dev mode: resolve from project root, not __dirname
       // Adjust this depending on your project structure
-      console.log(process.resourcesPath)
       return path.join(__dirname, '..', '..', 'src', 'chat', 'chat.json')
     }
   }
