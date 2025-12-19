@@ -1,6 +1,6 @@
 import { LLMRunner } from './llm-runner'
 import fs from 'fs'
-import open from 'open'
+import { exec } from 'child_process'
 import generateIntentContext from '@/utils/intentPromptGen'
 import getSettingsFile from '@/utils/fetchSettingsFile'
 
@@ -36,7 +36,7 @@ export class IntentRouter {
       case 'open_app':
         this.apps?.forEach((item) => {
           if (item.name.toLowerCase().trim() === intent.intent.target.toLowerCase().trim()) {
-            open(item.dir)
+            exec(`start "" "${item.dir}"`)
           }
         })
         return { message: intent.response_to_intent }
@@ -53,7 +53,6 @@ export class IntentRouter {
     const intentPrompt = generateIntentContext(this.appNames, prompt)
 
     const response = await this.llmRunner.generatePrompt(intentPrompt)
-    console.log(response)
     const response_json = JSON.parse(response) as {
       intent: { action: string; target: string }
       response_to_intent: string

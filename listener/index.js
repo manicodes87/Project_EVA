@@ -10,8 +10,13 @@ import "dotenv/config";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const WHISPER_EXEC = path.join(__dirname, "..", "model", "whisper", "whisper-cli.exe"); // Whisper CLI for transcripting
-const MODEL = path.join(__dirname, "..", "model", "ggml-base.bin"); // lightweight English model
+const settings = JSON.parse(
+  fs.readFileSync(path.join(__dirname, "..", "settings", "settings.json"), "utf-8")
+);
+
+const WHISPER_EXEC = path.join(__dirname, "whisper", "whisper-cli.exe"); // Whisper CLI for transcripting
+const MODEL = settings.models.find((val) => val.name === "whisperModel").dir; // Whisper model directory
+
 const SAMPLE_RATE = 16000;
 const SILENCE_THRESHOLD = 200; // adjust to mic sensitivity
 const SILENCE_TIMEOUT = 2000; // milliseconds of silence
@@ -24,6 +29,7 @@ class EvaListener {
     this.isRecording = false;
     this.audioBuffer = [];
     this.init();
+    this.isRunning = true;
   }
 
   async init() {
@@ -45,9 +51,18 @@ class EvaListener {
   }
 
   async startPorcupine() {
-    const keywordPaths = ["../model/porcupine_keywords/eva-windows.ppn"];
+    const keywordPaths = [
+      settings.models.find((val) => val.name === "porcupineModel").dir,
+    ];
+
     const sensitivities = [0.6];
-    this.porcupine = new Porcupine(process.env.API_KEY, keywordPaths, sensitivities);
+    this.porcupine = new Porcupine(
+      process.env.NODE_ENV === "development"
+        ? process.env.API_KEY
+        : settings.porcupineAPIKey,
+      keywordPaths,
+      sensitivities
+    );
     console.log("Porcupine ready");
   }
 
@@ -58,7 +73,7 @@ class EvaListener {
 
     let silenceTimer = null;
 
-    while (true) {
+    while (this.isRunning) {
       const pcm = await this.recorder.read();
       const result = this.porcupine.process(pcm);
 
@@ -144,7 +159,7 @@ class EvaListener {
     whisperProc.on("error", (err) => console.error("Whisper spawn error:", err));
 
     // Emitting the speech results after the proccess exit
-    whisperProc.on("exit", (code) => {
+    whisperProc.on("exit", () => {
       console.log("Transcription:", transcript.trim());
       this.emitEvent("speech_text", { text: transcript.trim() });
       fs.unlinkSync(tmpFile);
@@ -155,6 +170,7 @@ class EvaListener {
     if (this.recorder) await this.recorder.stop();
     this.porcupine?.release();
     this.wss?.close();
+    this.isRunning = false;
   }
 }
 
