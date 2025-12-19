@@ -6,8 +6,13 @@
     { "name": "steam", "dir": "E:/Steam/steam.exe" }
   ],
   "models": [
-    { "name": "whisperModel", "dir": "" },
+    { "name": "whisperModel", "dir": "E:/projects/Project_EVA/model/ggml-base.bin" },
     { "name": "assistantModel", "dir": "E:/projects/Project_EVA/model/eva.gguf" },
-    { "name": "porcupineModel", "dir": "" }
-  ]
+    {
+      "name": "porcupineModel",
+      "dir": "E:/projects/Project_EVA/model/porcupine_keywords/eva-windows.ppn"
+    },
+    { "name": "kokoroModel", "dir": "E:/projects/Project_EVA/model/Kokoro" }
+  ],
+  "porcupineAPIKey": "porcupine_keywords_api_key"
 }

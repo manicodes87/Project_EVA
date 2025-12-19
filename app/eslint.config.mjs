@@ -20,7 +20,6 @@ export default defineConfig(
   {
     files: ['**/*.{ts,tsx, mjs}'],
     plugins: {
-      'react-hooks': eslintPluginReactHooks,
       'react-refresh': eslintPluginReactRefresh
     },
     rules: {
