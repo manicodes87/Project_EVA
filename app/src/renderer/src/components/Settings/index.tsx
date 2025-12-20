@@ -2,6 +2,7 @@ import { JSX, useEffect, useState } from 'react'
 import AppManager from '../AppEntry'
 import ModelDirectories from '../ModelDirectories'
 import { SettingsJson } from '@/types/types'
+import ApiKeys from '../ApiKeys'
 
 const loadSettings = async (): Promise<SettingsJson> => {
   return (await window.eva.loadSettings()) as SettingsJson
@@ -22,6 +23,7 @@ export default function Settings(): JSX.Element {
         <>
           <AppManager settings={settings} />
           <ModelDirectories settings={settings} />
+          <ApiKeys settings={settings} />
         </>
       ) : (
         <h1>Loading</h1>
