@@ -14,5 +14,5 @@
     },
     { "name": "kokoroModel", "dir": "E:/projects/Project_EVA/model/Kokoro" }
   ],
-  "porcupineAPIKey": "porcupine_keywords_api_key"
+  "porcupineAPIKey": "Your_API_Key_Here"
 }
