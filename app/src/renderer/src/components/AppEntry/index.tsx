@@ -17,9 +17,9 @@ export default function AppManager({ settings }: { settings: SettingsJson }): JS
     setAppNames([...appNames, name.trim().toLowerCase()])
 
     const newSettings: SettingsJson = {
+      ...settings,
       apps: [...apps, { name: name.trim().toLowerCase(), dir: fixedPath }],
-      appNames: [...appNames, name.trim().toLowerCase()],
-      models: settings.models
+      appNames: [...appNames, name.trim().toLowerCase()]
     }
     window.eva.changeSettings(JSON.stringify(newSettings))
 
