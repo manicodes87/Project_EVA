@@ -8,6 +8,8 @@ import { subscribeText } from '@/eva-core/stt-engine'
 import WebsocketManager from '@/utils/websocketManager'
 import { WindowManager } from '@/utils/windowManager'
 import { registerIpcMainHandlers } from '@/ipc'
+import { ChatManager } from '@/utils/chatManager'
+import { MemoryManager } from '@/utils/memoryManager'
 
 export let intentRouter: IntentRouter | null = null
 export let websocketManager: WebsocketManager | null = null
@@ -86,6 +88,8 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
+    ChatManager.getInstance().clearChats()
+    MemoryManager.getInstance().clearMemory()
   }
 })
 

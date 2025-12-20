@@ -40,18 +40,23 @@ export class ChatManager {
     return data
   }
 
-  public saveMessage(sender: string, message: string): { message: number } {
-    if (!message || message.trim() == '') return { message: 400 }
+  public clearChats(): void {
+    fs.writeFileSync(this.fileURL, JSON.stringify({ chats: [] }))
+  }
+
+  public saveMessage(sender: string, message: string): { message: number; id: string } {
+    if (!message || message.trim() == '') return { message: 400, id: '' }
     const rawdata = fs.readFileSync(this.fileURL).toString()
     const data = JSON.parse(rawdata)
+    const id = crypto.randomUUID()
 
     data.chats.push({
       sender,
       message,
-      id: crypto.randomUUID()
+      id
     })
 
     fs.writeFileSync(this.fileURL, JSON.stringify(data))
-    return { message: 200 }
+    return { message: 200, id }
   }
 }

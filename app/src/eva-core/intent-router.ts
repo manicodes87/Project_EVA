@@ -28,34 +28,40 @@ export class IntentRouter {
     return IntentRouter.instance
   }
 
-  public async handlePrompt(prompt: string): Promise<{ message: string | number }> {
-    const intent = await this.classifyIntent(prompt)
-    if (!intent) return { message: 404 }
+  public async handlePrompt(
+    prompt: string
+  ): Promise<{ message: string | number; context: string }> {
+    const { intent, memory, response_to_intent } = await this.classifyIntent(prompt)
+    if (!intent) return { message: 404, context: '' }
+    const response = { message: response_to_intent, context: memory.context }
 
-    switch (intent.intent.action) {
+    switch (intent.action) {
       case 'open_app':
         this.apps?.forEach((item) => {
-          if (item.name.toLowerCase().trim() === intent.intent.target.toLowerCase().trim()) {
+          if (item.name.toLowerCase().trim() === intent.target.toLowerCase().trim()) {
             exec(`start "" "${item.dir}"`)
           }
         })
-        return { message: intent.response_to_intent }
+        return response
       case 'search_web':
-        return { message: intent.response_to_intent }
+        return response
       default:
-        return { message: intent.response_to_intent }
+        return response
     }
   }
 
-  private async classifyIntent(
-    prompt: string
-  ): Promise<{ intent: { action: string; target: string }; response_to_intent: string }> {
+  private async classifyIntent(prompt: string): Promise<{
+    intent: { action: string; target: string }
+    response_to_intent: string
+    memory: { context: string }
+  }> {
     const intentPrompt = generateIntentContext(this.appNames, prompt)
 
     const response = await this.llmRunner.generatePrompt(intentPrompt)
     const response_json = JSON.parse(response) as {
       intent: { action: string; target: string }
       response_to_intent: string
+      memory: { context: string }
     }
 
     return response_json
