@@ -1,10 +1,10 @@
 import { JSX } from 'react'
+import CycleStatus from '../CycleStatus'
 
 export default function Home(): JSX.Element {
   return (
-    <div className="p-5">
-      <h1 className="text-2xl font-bold mb-4">Home Page</h1>
-      <p>This is where the Home functionality will be implemented.</p>
+    <div className="p-5 w-[90%] h-[90%] bg-(--background-darker-color) rounded-2xl">
+      <CycleStatus />
     </div>
   )
 }

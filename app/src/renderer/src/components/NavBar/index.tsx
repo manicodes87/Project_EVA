@@ -61,7 +61,7 @@ export default function NavBar(): JSX.Element {
         {navItems.map((item) => (
           <motion.li
             key={item.text}
-            className={`relative p-1 rounded-[10px] cursor-pointer m-3 outline-none  ${location.pathname === item.path ? 'bg-(--secondary-color)' : 'bg-(--background-color)'}`}
+            className={`relative p-1 rounded-[10px] cursor-pointer m-3 outline-none transition duration-500 ${location.pathname === item.path ? 'bg-(--secondary-color)' : 'bg-(--background-color)'}`}
             animate={{
               visibility: collapsed ? 'hidden' : 'visible',
               opacity: collapsed ? 0 : 1,

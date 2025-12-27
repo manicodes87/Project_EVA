@@ -28,7 +28,7 @@ export default function ButtonBorderRight({ child }: { child: React.ReactNode })
       <div className="z-10 relative text-sm flex items-center">{child}</div>
       <div className="w-full h-full absolute backdrop-blur-xl top-0 left-0 z-1 rounded-[10px]"></div>
       <motion.div
-        className="p-1 rounded-[10px] text-md border-r-30 border-r-(--primary-color) w-full h-full absolute top-0 left-0"
+        className="p-1 rounded-[10px] text-md border-r-5 border-r-(--primary-color) w-full h-full absolute top-0 left-0"
         ref={firstBorder}
         animate={{
           borderRightWidth: isHovered ? `${borderWidth1}px` : '0px',
@@ -36,7 +36,7 @@ export default function ButtonBorderRight({ child }: { child: React.ReactNode })
         }}
       ></motion.div>
       <motion.div
-        className="p-1 rounded-[10px] text-md border-r-5 border-r-(--accent-color) w-full h-full absolute top-0 right-0 bg-transparent"
+        className="p-1 rounded-[10px] text-md border-r-10 border-r-(--accent-color) w-full h-full absolute top-0 right-0 bg-transparent"
         ref={secondBorder}
         animate={{
           borderRightWidth: isHovered ? `${borderWidth2}px` : '0px',
