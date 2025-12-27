@@ -11,10 +11,7 @@ export function registerEvaAnswer(): void {
     const res = await intentRouter?.handlePrompt(message)
 
     // Activate TTS synthesis
-    TTSEngine.synthesize(res?.message as string).then((audioBuffer) => {
-      // Send TTS ready event to renderer with audio buffer
-      WindowManager?.getMainWindow()?.webContents.send('eva_tts_ready', audioBuffer)
-    })
+    TTSEngine.enqueueChunk(res?.message as string)
 
     // Save chat to chat history
     const { id } = ChatManager.getInstance().saveMessage(SenderEnum.EVA, res?.message as string)

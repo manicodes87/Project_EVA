@@ -3,9 +3,14 @@ import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
 const eva = {
-  onTTS: (callback: (event: Electron.IpcRendererEvent, audioBuffer: ArrayBuffer) => void) => {
-    ipcRenderer.on('eva_tts_ready', (event, audioBuffer: ArrayBuffer) =>
-      callback(event, audioBuffer)
+  onTTS: (
+    callback: (
+      event: Electron.IpcRendererEvent,
+      msg: { pcm: ArrayBuffer; sampleRate: number }
+    ) => Promise<void>
+  ) => {
+    ipcRenderer.on('tts-audio-chunk', (event, msg: { pcm: ArrayBuffer; sampleRate: number }) =>
+      callback(event, msg)
     )
   },
   readChats: () => ipcRenderer.invoke('read-chats'),

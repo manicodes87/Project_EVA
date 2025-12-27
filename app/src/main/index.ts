@@ -10,6 +10,7 @@ import { WindowManager } from '@/utils/windowManager'
 import { registerIpcMainHandlers } from '@/ipc'
 import { ChatManager } from '@/utils/chatManager'
 import { MemoryManager } from '@/utils/memoryManager'
+import { TTSEngine } from '@/eva-core/tts-engine'
 
 export let intentRouter: IntentRouter | null = null
 export let websocketManager: WebsocketManager | null = null
@@ -53,6 +54,7 @@ function createWindow(): void {
   }
 
   WindowManager.setMainWindow(mainWindow)
+  TTSEngine.attachWindow(mainWindow)
 }
 
 // This method will be called when Electron has finished

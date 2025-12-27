@@ -7,21 +7,53 @@ import { Routes, Route, useLocation, HashRouter } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { JSX } from 'react'
 
-window.eva.onTTS(async (_, audioBuffer: ArrayBuffer) => {
-  const audioContext = new AudioContext()
+// --- Audio playback ---
+let audioContext: AudioContext | null = null
+let nextTime = 0
+const audioQueue: { buffer: AudioBuffer; duration: number }[] = []
 
-  // audioBuffer is ArrayBuffer from worker
-  const decoded = await audioContext.decodeAudioData(audioBuffer)
+function getAudioContext() {
+  if (!audioContext) {
+    audioContext = new AudioContext()
+    audioContext.resume() // ensure it can play on user interaction
+    nextTime = audioContext.currentTime
+  }
+  return audioContext
+}
 
-  const source = audioContext.createBufferSource()
-  source.buffer = decoded
-  source.connect(audioContext.destination)
-  source.start()
+// Plays queued audio chunks without gaps
+function scheduleAudio(buffer: AudioBuffer) {
+  const ctx = getAudioContext()
+  const src = ctx.createBufferSource()
+  src.buffer = buffer
+  src.connect(ctx.destination)
+
+  const startTime = Math.max(nextTime, ctx.currentTime)
+  src.start(startTime)
+  nextTime = startTime + buffer.duration
+}
+
+// --- TTS callback ---
+window.eva.onTTS(async (_, msg: { pcm: ArrayBuffer; sampleRate: number }) => {
+  if (!msg.pcm || !msg.sampleRate) return
+
+  const ctx = getAudioContext()
+  const floatData = new Float32Array(msg.pcm)
+  const buffer = ctx.createBuffer(1, floatData.length, msg.sampleRate)
+  buffer.copyToChannel(floatData, 0, 0)
+
+  audioQueue.push({ buffer, duration: buffer.duration })
+
+  // Schedule all queued chunks immediately
+  while (audioQueue.length > 0) {
+    const { buffer } = audioQueue.shift()!
+    scheduleAudio(buffer)
+  }
 })
 
+// --- Routes & App ---
 function AnimatedRoutes(): JSX.Element {
   const location = useLocation()
-
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
