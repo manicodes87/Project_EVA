@@ -4,7 +4,7 @@ import icon from '../../resources/icon.png?asset'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { LLMRunner } from '@/eva-core/llm-runner'
 import { IntentRouter } from '@/eva-core/intent-router'
-import { subscribeText } from '@/eva-core/stt-engine'
+import { STTEngine } from '@/eva-core/stt-engine'
 import WebsocketManager from '@/utils/websocketManager'
 import { WindowManager } from '@/utils/windowManager'
 import { registerIpcMainHandlers } from '@/ipc'
@@ -55,6 +55,7 @@ function createWindow(): void {
 
   WindowManager.setMainWindow(mainWindow)
   TTSEngine.attachWindow(mainWindow)
+  TTSEngine.enqueueChunk('Hello, Eva is initialized and ready to assist you.')
 }
 
 // This method will be called when Electron has finished
@@ -63,10 +64,11 @@ function createWindow(): void {
 app.whenReady().then(() => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
-  websocketManager = WebsocketManager.getInstance('ws://localhost:6000')
+  websocketManager = WebsocketManager.getInstance(() => {
+    STTEngine.init()
+  }, 'ws://localhost:6000')
   initializeLLM()
   registerIpcMainHandlers()
-  subscribeText()
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.

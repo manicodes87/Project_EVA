@@ -3,6 +3,7 @@ import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
 const eva = {
+  getCycleStatus: () => ipcRenderer.invoke('get_cycle_status'),
   onTTS: (
     callback: (
       event: Electron.IpcRendererEvent,

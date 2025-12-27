@@ -3,6 +3,7 @@ import { LlamaChatSession } from 'node-llama-cpp'
 import os from 'os'
 import getSettingsFile from '@/utils/fetchSettingsFile'
 import { SettingsJson } from '@/types/types'
+import { CycleStatus } from './cycle-status'
 
 // Singleton LLMRunner to manage LLM sessions
 export class LLMRunner {
@@ -38,6 +39,8 @@ export class LLMRunner {
     this.session = new LlamaChatSession({
       contextSequence: context.getSequence()
     })
+
+    CycleStatus.setAssistantInitialized()
 
     return { message: 200 }
   }

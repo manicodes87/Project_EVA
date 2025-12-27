@@ -3,11 +3,13 @@ import createWorker from '../workers/ttsWorker?nodeWorker'
 import { SettingsJson } from '@/types/types'
 import fs from 'fs'
 import { BrowserWindow } from 'electron'
+import { CycleStatus } from './cycle-status'
 
 export class TTSEngine {
   private static worker = createWorker({})
   private static requestId = 0
   private static win: BrowserWindow | null = null
+  public static isInitialized = false
 
   private static modelPath = (
     JSON.parse(fs.readFileSync(getSettingsFile(), 'utf8')) as SettingsJson
@@ -20,7 +22,17 @@ export class TTSEngine {
   static {
     this.worker.on(
       'message',
-      (msg: { id: number; pcm?: ArrayBuffer; sampleRate?: number; error?: string }) => {
+      (msg: {
+        id: number
+        pcm?: ArrayBuffer
+        sampleRate?: number
+        error?: string
+        init: boolean
+      }) => {
+        if (msg.init) {
+          this.isInitialized = true
+          CycleStatus.setTTSInitialized()
+        }
         if (msg.pcm && msg.sampleRate && this.win && !this.win.isDestroyed()) {
           this.win.webContents.send('tts-audio-chunk', { pcm: msg.pcm, sampleRate: msg.sampleRate })
         }

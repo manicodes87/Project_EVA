@@ -3,6 +3,7 @@ import { ChatInterface, SettingsJson } from './types'
 declare global {
   interface Window {
     eva: {
+      getCycleStatus: () => Promise<{ tts: boolean; listener: boolean; assistant: boolean }>
       onTTS: (
         cb: (
           event: Electron.IpcRendererEvent,

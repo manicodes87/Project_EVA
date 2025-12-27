@@ -11,14 +11,17 @@ let tts: KokoroTTS | null = null
 let initPromise: Promise<void> | null = null
 const queue: TTSMessage[] = []
 let processing = false
+let isInit = false
 
 async function initTTS(modelPath: string) {
+  isInit = false
   if (tts) return
   if (initPromise) return initPromise
 
   initPromise = (async () => {
     tts = await KokoroTTS.from_pretrained(modelPath)
     await tts.generate(' ') // warm-up
+    isInit = true
   })()
 
   return initPromise
@@ -45,7 +48,9 @@ async function processQueue() {
           floatData.buffer instanceof ArrayBuffer ? floatData.buffer : floatData.slice().buffer
         const sampleRate = chunk.audio.sampling_rate ?? 22050
 
-        parentPort!.postMessage({ id: msg.id, pcm: pcmBuffer, sampleRate }, [pcmBuffer])
+        parentPort!.postMessage({ id: msg.id, pcm: pcmBuffer, sampleRate, init: isInit }, [
+          pcmBuffer
+        ])
       }
     } catch (err) {
       parentPort!.postMessage({
